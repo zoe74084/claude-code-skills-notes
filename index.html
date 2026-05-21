@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code Skills — 電子版</title>
+<style>
+/* ── Reset & Base ── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif; background: #f7f6f3; color: #1a1a1a; font-size: 15px; line-height: 1.75; }
+
+/* ── Layout ── */
+.layout { display: flex; min-height: 100vh; }
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 330px; min-width: 330px;
+  background: #1a1a1a; color: #e5e5e5;
+  padding: 28px 0;
+  position: sticky; top: 0; height: 100vh;
+  overflow-y: auto; flex-shrink: 0;
+  display: flex; flex-direction: column;
+}
+.sidebar-header { padding: 0 22px 20px; border-bottom: 1px solid #333; margin-bottom: 12px; }
+.sidebar-header .brand { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #d97706; margin-bottom: 4px; }
+.sidebar-header h2 { font-size: 15px; font-weight: 700; color: #fff; line-height: 1.4; }
+.nav-list { list-style: none; flex: 1; }
+.nav-item a {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 9px 22px; color: #aaa; text-decoration: none;
+  font-size: 13px; line-height: 1.4; transition: background 0.15s, color 0.15s;
+}
+.nav-item a:hover { background: #2a2a2a; color: #fff; }
+.nav-item a.active { background: #2a2a2a; color: #f59e0b; }
+.nav-num { font-size: 11px; font-weight: 700; color: #555; min-width: 20px; margin-top: 1px; }
+.nav-item a:hover .nav-num, .nav-item a.active .nav-num { color: #d97706; }
+
+/* ── Sidebar Footer ── */
+.sidebar-footer {
+  padding: 14px 22px 18px;
+  border-top: 1px solid #333;
+  font-size: 11px;
+  color: #555;
+  line-height: 1.7;
+  flex-shrink: 0;
+}
+.sidebar-footer a { color: #d97706; text-decoration: none; }
+.sidebar-footer a:hover { text-decoration: underline; }
+
+/* ── Main ── */
+.main { flex: 1; padding: 48px 52px; max-width: 820px; }
+
+/* ── Lesson Block ── */
+.lesson { margin-bottom: 72px; padding-bottom: 72px; border-bottom: 1px solid #e5e7eb; scroll-margin-top: 32px; }
+.lesson:last-child { border-bottom: none; }
+.lesson-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #b45309; background: #fef3c7; padding: 3px 10px; border-radius: 99px; display: inline-block; margin-bottom: 12px; }
+.lesson h1 { font-size: 24px; font-weight: 800; color: #111; border-bottom: 3px solid #d97706; padding-bottom: 10px; margin-bottom: 4px; line-height: 1.3; }
+.lesson-sub { font-size: 13px; color: #999; margin-bottom: 28px; }
+
+/* ── Section Headings ── */
+h2 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: #b45309; margin: 24px 0 10px; display: flex; align-items: center; gap: 8px; }
+h2::before { content: ""; display: block; width: 4px; height: 14px; background: #d97706; border-radius: 2px; flex-shrink: 0; }
+h3 { font-size: 14px; font-weight: 700; color: #333; margin: 14px 0 5px; }
+
+/* ── Lists ── */
+ol, ul { padding-left: 20px; }
+li { margin-bottom: 5px; }
+li strong { color: #111; }
+
+/* ── Tables ── */
+table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13.5px; }
+th { background: #fef3c7; color: #92400e; font-weight: 700; padding: 7px 11px; text-align: left; border: 1px solid #fde68a; }
+td { padding: 6px 11px; border: 1px solid #e5e7eb; vertical-align: top; }
+tr:nth-child(even) td { background: #fffbeb; }
+
+/* ── Code ── */
+pre, code { background: #f3f3ef; font-family: "SF Mono", "Fira Code", "Consolas", monospace; font-size: 13px; border-radius: 4px; }
+pre { padding: 14px 16px; overflow-x: auto; margin: 10px 0; border-left: 3px solid #d97706; line-height: 1.85; }
+code { padding: 1px 5px; }
+
+/* ── Special Boxes ── */
+.example-box { background: #fffbeb; border: 1px solid #fde68a; border-left: 4px solid #d97706; border-radius: 6px; padding: 13px 15px; margin: 10px 0; font-size: 13.5px; }
+.example-box .label { font-size: 11px; font-weight: 700; color: #b45309; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 5px; }
+.tip-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid #22c55e; border-radius: 6px; padding: 11px 15px; margin: 10px 0; font-size: 13.5px; }
+.tip-box .label { font-size: 11px; font-weight: 700; color: #15803d; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+.key-rule { background: #fffbeb; border: 1px solid #fde68a; border-left: 4px solid #f59e0b; border-radius: 6px; padding: 11px 15px; margin: 14px 0; font-size: 14px; font-weight: 600; color: #92400e; }
+.warn-box { background: #fef2f2; border: 1px solid #fecaca; border-left: 4px solid #ef4444; border-radius: 6px; padding: 11px 15px; margin: 10px 0; font-size: 13.5px; }
+.warn-box .label { font-size: 11px; font-weight: 700; color: #dc2626; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+.note-box { background: #f9f9f7; border: 1px solid #e5e7eb; border-left: 3px solid #9ca3af; border-radius: 4px; padding: 10px 14px; font-size: 12.5px; color: #555; margin: 10px 0 18px; line-height: 1.65; }
+.note-box strong { color: #374151; }
+
+/* ── Workflow Steps ── */
+.workflow { display: flex; gap: 0; margin: 14px 0; }
+.wf-step { flex: 1; text-align: center; padding: 12px 6px; background: #fffbeb; border: 1px solid #fde68a; position: relative; font-size: 12px; }
+.wf-step:not(:last-child)::after { content: "→"; position: absolute; right: -12px; top: 50%; transform: translateY(-50%); color: #d97706; font-weight: 700; z-index: 1; font-size: 15px; }
+.wf-step .en { font-weight: 800; color: #92400e; font-size: 13px; display: block; }
+.wf-step .zh { color: #666; font-size: 11px; }
+
+/* ── Priority Cards ── */
+.priority-cards { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; }
+.priority-card { display: flex; align-items: center; gap: 12px; border-radius: 8px; padding: 10px 14px; font-size: 13px; border: 1px solid #e5e7eb; }
+.priority-card .num { font-weight: 800; font-size: 16px; min-width: 28px; text-align: center; }
+.priority-card.p1 { background: #fef3c7; border-color: #fde68a; }
+.priority-card.p2 { background: #fef9f0; border-color: #fed7aa; }
+.priority-card.p3 { background: #f0fdf4; border-color: #bbf7d0; }
+.priority-card.p4 { background: #f0f9ff; border-color: #bae6fd; }
+.priority-card.p1 .num { color: #92400e; }
+.priority-card.p2 .num { color: #c2410c; }
+.priority-card.p3 .num { color: #15803d; }
+.priority-card.p4 .num { color: #0369a1; }
+.priority-card .text strong { display: block; font-size: 13px; }
+.priority-card .text small { font-size: 12px; color: #666; }
+
+/* ── Video Thumbnail Link ── */
+.video-link { display: block; position: relative; margin: 16px 0 24px; border-radius: 10px; overflow: hidden; text-decoration: none; box-shadow: 0 2px 16px rgba(0,0,0,.15); }
+.video-link img { display: block; width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+.video-link .play-btn { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,.35); transition: background .2s; }
+.video-link:hover .play-btn { background: rgba(0,0,0,.55); }
+.play-circle { width: 64px; height: 64px; background: rgba(255,255,255,.92); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; transition: transform .2s; }
+.video-link:hover .play-circle { transform: scale(1.1); }
+.play-circle svg { width: 26px; height: 26px; fill: #d97706; margin-left: 4px; }
+.play-label { font-size: 13px; font-weight: 600; color: #fff; letter-spacing: 0.04em; text-shadow: 0 1px 3px rgba(0,0,0,.5); }
+
+/* ── CTA Box ── */
+.cta-box { background: #fffbeb; border: 1.5px solid #f59e0b; border-radius: 10px; padding: 18px 20px; margin: 24px 0 0; }
+.cta-header { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #92400e; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.cta-header::before { content: ""; display: block; width: 8px; height: 8px; background: #f59e0b; border-radius: 50%; flex-shrink: 0; }
+.cta-steps { list-style: none; padding-left: 0; counter-reset: cta; }
+.cta-steps li { counter-increment: cta; display: flex; align-items: flex-start; gap: 10px; margin-bottom: 9px; font-size: 13.5px; line-height: 1.55; }
+.cta-steps li::before { content: counter(cta); min-width: 22px; height: 22px; background: #d97706; color: #fff; font-weight: 800; font-size: 11px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.cta-steps li code { background: #fde68a; padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+.resource-list { list-style: none; padding: 0; }
+.resource-list li { padding: 9px 0; border-bottom: 1px solid #fde68a; }
+.resource-list li:last-child { border-bottom: none; padding-bottom: 0; }
+.resource-list a { font-weight: 700; color: #92400e; font-size: 13.5px; text-decoration: none; }
+.resource-list a:hover { text-decoration: underline; color: #b45309; }
+.resource-desc { font-size: 12px; color: #666; margin-top: 3px; line-height: 1.5; }
+
+/* ── Source Footer ── */
+.source-footer {
+  margin-top: 48px;
+  padding: 16px 0 8px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+}
+.source-footer a { color: #d97706; text-decoration: none; }
+.source-footer a:hover { text-decoration: underline; }
+
+/* ── Print ── */
+@media print {
+  .sidebar { display: none; }
+  .main { padding: 20px; max-width: 100%; }
+  .lesson { page-break-after: always; }
+  body { font-size: 12px; background: #fff; }
+  h1 { font-size: 20px; }
+}
+
+/* ── Mobile Header ── */
+.mobile-header {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: #1a1a1a;
+  position: sticky; top: 0;
+  z-index: 50;
+  border-bottom: 1px solid #333;
+}
+.hamburger {
+  width: 36px; height: 36px;
+  background: none; border: none; cursor: pointer;
+  display: flex; flex-direction: column; justify-content: center; gap: 5px;
+  padding: 4px; flex-shrink: 0;
+}
+.hamburger span { display: block; width: 22px; height: 2px; background: #d97706; border-radius: 2px; transition: 0.2s; }
+.mobile-title { font-size: 13px; font-weight: 700; color: #fff; line-height: 1.35; }
+.mobile-title small { display: block; font-size: 10px; font-weight: 400; color: #888; margin-top: 1px; }
+
+/* ── Sidebar Overlay ── */
+.sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.5); z-index: 99;
+}
+.sidebar-overlay.visible { display: block; }
+
+/* ── Mobile Breakpoint ── */
+@media (max-width: 768px) {
+  .mobile-header { display: flex; }
+  .layout { display: block; }
+  .sidebar {
+    position: fixed; top: 0; left: 0;
+    width: 280px; height: 100vh;
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    padding-top: 16px;
+  }
+  .sidebar.open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,.4); }
+  .main { padding: 20px 16px; max-width: 100%; }
+  .workflow { flex-direction: column; gap: 22px; }
+  .wf-step:not(:last-child)::after {
+    content: "↓";
+    position: absolute;
+    right: auto; top: auto;
+    bottom: -16px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+  }
+  table { font-size: 12px; }
+  th, td { padding: 5px 8px; }
+  pre { font-size: 12px; }
+  .lesson { margin-bottom: 40px; padding-bottom: 40px; }
+  .lesson h1 { font-size: 20px; }
+  .cta-box { padding: 14px 14px; }
+  html, body { max-width: 100%; overflow-x: hidden; }
+  .main { width: 100%; }
+  table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  pre { max-width: 100%; word-break: break-all; white-space: pre-wrap; }
+  a { word-break: break-word; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ MOBILE HEADER ══ -->
+<div class="mobile-header">
+  <button class="hamburger" aria-label="開啟選單">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="mobile-title">Claude Code Skills <small>學習筆記</small></div>
+</div>
+<div class="sidebar-overlay"></div>
+
+<div class="layout">
+
+<!-- ══ SIDEBAR ══ -->
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <div class="brand">Course Notes</div>
+    <h2>Claude Code Skills<br>學習筆記</h2>
+  </div>
+  <ul class="nav-list">
+    <li class="nav-item"><a href="#lesson01"><span class="nav-num">01</span>What Are Skills?</a></li>
+    <li class="nav-item"><a href="#lesson02"><span class="nav-num">02</span>Troubleshooting Skills</a></li>
+    <li class="nav-item"><a href="#lesson03"><span class="nav-num">03</span>Sharing Skills</a></li>
+    <li class="nav-item"><a href="#lesson04"><span class="nav-num">04</span>Skills vs Other Features</a></li>
+    <li class="nav-item"><a href="#lesson05"><span class="nav-num">05</span>Configuration & Multi-file</a></li>
+    <li class="nav-item"><a href="#lesson06"><span class="nav-num">06</span>Creating Your First Skill</a></li>
+    <li class="nav-item" style="margin-top:8px;border-top:1px solid #333;padding-top:8px;"><a href="#resources"><span class="nav-num" style="color:#0369a1;">↗</span>延伸學習資源</a></li>
+  </ul>
+  <div class="sidebar-footer">
+    資料來源<br>
+    <a href="https://youtube.com/playlist?list=PLmWCw1CzcFim_hkruZSlABOUOAAQ5JMyo&si=fGO447oWArr1Txw9" target="_blank">Claude Youtube 官方頻道課程 Claude Code Skills</a>
+  </div>
+</nav>
+
+<!-- ══ MAIN ══ -->
+<main class="main">
+
+<!-- ═══════════════════════════════════ 01 ═══ -->
+<section class="lesson" id="lesson01">
+  <span class="lesson-tag">Lesson 01</span>
+  <h1>What Are Skills?<br><small style="font-size:16px;font-weight:500;color:#666;">什麼是 Skills？</small></h1>
+  <div class="lesson-sub">本節概念：Skill Definition · Storage Locations · skill.md · vs CLAUDE.md</div>
+  <a href="https://www.youtube.com/watch?v=bjdBVZa66oU" target="_blank" class="video-link">
+    <img src="https://img.youtube.com/vi/bjdBVZa66oU/mqdefault.jpg" alt="What Are Skills?">
+    <div class="play-btn">
+      <div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      <span class="play-label">前往 YouTube 觀看影片</span>
+    </div>
+  </a>
+
+  <h2>本節重點 Key Takeaways</h2>
+  <ol>
+    <li>Skills 是一種 Markdown 檔案，用來<strong>一次寫好、讓 Claude 自動在對應時機套用</strong>的知識，解決「每次對話都要重複說明」的問題。</li>
+    <li>Skills 存放在三個位置：個人（<code>~/.claude/skills/</code>）、專案（<code>./.claude/skills/</code>）、Plugin（Marketplace 安裝）。</li>
+    <li>每個 Skill 是一個目錄，目錄裡唯一必要的檔案是 <code>skill.md</code>。</li>
+    <li>Skill 的 frontmatter 包含 <code>name</code>（識別用）和 <code>description</code>（Claude 用來決定何時啟動）。</li>
+    <li><strong>Skills vs CLAUDE.md</strong>：CLAUDE.md 每次對話都載入；Skills 只在請求匹配時按需載入。</li>
+  </ol>
+
+  <h2>核心定義 Core Definition</h2>
+  <p>每次你向 Claude 解釋你的 coding 規範、PR review 格式、commit 訊息偏好——你都在重複一件事。</p>
+  <p><strong>Skills 把這些知識寫一次，Claude 按情境自動啟用。</strong></p>
+  <div class="key-rule">
+    如果你發現自己重複向 Claude 解釋同樣的事情 → 那就是一個 Skill 等著被寫。
+  </div>
+
+  <h2>三個存放位置 Storage Locations</h2>
+  <table>
+    <tr><th>位置</th><th>路徑</th><th>適用對象</th></tr>
+    <tr><td><strong>個人 Skills</strong></td><td><code>~/.claude/skills/</code></td><td>個人偏好、跟著你走，所有專案都能用</td></tr>
+    <tr><td><strong>專案 Skills</strong></td><td><code>./.claude/skills/</code>（repo 根目錄）</td><td>團隊標準，clone repo 就自動擁有</td></tr>
+    <tr><td><strong>Plugin Skills</strong></td><td>透過 Marketplace 安裝</td><td>社群分享的通用功能</td></tr>
+  </table>
+
+  <h2>Skill 的結構 Skill Structure</h2>
+  <pre>~/.claude/skills/
+└── pr-review/          ← 目錄名稱 = skill name
+    └── skill.md        ← 唯一必要檔案（大寫 SKILL 小寫 .md）</pre>
+
+  <p><code>skill.md</code> 的格式：</p>
+  <pre>---
+name: pr-review
+description: |
+  Helps write structured PR descriptions following team template.
+  Use when asked to "write a PR description", "review my changes",
+  "help me document this PR".
+---
+
+（以下是 Claude 執行時讀取的指令內容）</pre>
+
+  <h2>Skills vs CLAUDE.md 對比</h2>
+  <table>
+    <tr><th></th><th>CLAUDE.md</th><th>Skills</th></tr>
+    <tr><td><strong>載入時機</strong></td><td>每次對話都載入</td><td>請求語義匹配才按需載入</td></tr>
+    <tr><td><strong>適用情境</strong></td><td>永遠有效的專案規範</td><td>特定任務才需要的知識</td></tr>
+    <tr><td><strong>範例</strong></td><td>「永遠用 TypeScript strict mode」</td><td>PR review checklist</td></tr>
+    <tr><td><strong>Context 佔用</strong></td><td>每次都佔</td><td>只有觸發時才佔</td></tr>
+  </table>
+
+  <div class="tip-box">
+    <div class="label">最佳實踐</div>
+    Task-specific 的詳細指令放 Skills，避免每次對話都佔用 context window。
+  </div>
+
+  <div class="cta-box">
+    <div class="cta-header">實作練習 Try It Now</div>
+    <ol class="cta-steps">
+      <li>想一件你最常重複向 Claude 說明的事（commit 格式、程式碼風格、某個工作流）</li>
+      <li>在 <code>~/.claude/skills/</code> 建立一個目錄，命名為你的 skill 名稱</li>
+      <li>建立 <code>skill.md</code>，寫好 <code>name</code> 和 <code>description</code>，再加上你的指令</li>
+      <li>重啟 Claude Code，確認 Skill 出現在 <code>/list-skills</code> 中</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ 02 ═══ -->
+<section class="lesson" id="lesson02">
+  <span class="lesson-tag">Lesson 02</span>
+  <h1>Troubleshooting Skills<br><small style="font-size:16px;font-weight:500;color:#666;">Skills 的除錯與排查</small></h1>
+  <div class="lesson-sub">本節概念：Trigger Matching · File Structure · Priority Conflicts · Runtime Errors</div>
+  <a href="https://www.youtube.com/watch?v=YBa1cwaG7is" target="_blank" class="video-link">
+    <img src="https://img.youtube.com/vi/YBa1cwaG7is/mqdefault.jpg" alt="Troubleshooting Skills">
+    <div class="play-btn">
+      <div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      <span class="play-label">前往 YouTube 觀看影片</span>
+    </div>
+  </a>
+
+  <h2>本節重點 Key Takeaways</h2>
+  <ol>
+    <li>Skills 不觸發的原因幾乎都是 <strong>description 語義重疊不足</strong>，加入 trigger phrases 可解決。</li>
+    <li><code>skill.md</code> 必須放在以 skill 名稱命名的<strong>子目錄</strong>中，不能直接放在 skills 根目錄。</li>
+    <li>同名 Skill 有 Priority 規則：Enterprise > Personal > Project > Plugin。</li>
+    <li>跑 <code>claude --debug</code> 可以看載入錯誤，是最直接的診斷工具。</li>
+    <li>Skill 載入但執行失敗 → 通常是外部套件未安裝或腳本缺少執行權限。</li>
+  </ol>
+
+  <h2>四類常見問題 Common Issues</h2>
+
+  <h3>問題 1：Skill 沒有觸發（Not Triggering）</h3>
+  <p>Claude 使用<strong>語義匹配</strong>決定啟動哪個 Skill。請求與 description 的語義重疊不夠 → 不觸發。</p>
+  <div class="example-box">
+    <div class="label">解法</div>
+    1. 在 description 加入使用者<strong>實際會說的句子</strong>（trigger phrases）<br>
+    2. 測試多種說法：「幫我 profile」「為什麼這麼慢」「讓這個更快」<br>
+    3. 任何說法失敗就把它加進 description
+  </div>
+
+  <h3>問題 2：Skill 沒出現在清單（Not Loading）</h3>
+  <p>結構錯誤是最常見原因：</p>
+  <pre># ❌ 錯誤：直接放在 skills 根目錄
+~/.claude/skills/skill.md
+
+# ✅ 正確：放在以 skill 名稱命名的子目錄
+~/.claude/skills/pr-review/skill.md</pre>
+  <div class="warn-box">
+    <div class="label">必須確認</div>
+    檔名必須是 <code>skill.md</code>（全小寫）
+  </div>
+  <p>確認結構正確後還有問題 → 跑 <code>claude --debug</code> 查看載入錯誤訊息。</p>
+
+  <h3>問題 3：用到錯誤的 Skill（Wrong Skill / Conflict）</h3>
+  <p>兩個 Skill 的 description 太相似，或個人 Skill 被企業 Skill 覆蓋。</p>
+  <div class="priority-cards">
+    <div class="priority-card p1">
+      <div class="num">1</div>
+      <div class="text"><strong>Enterprise</strong><small>管理設定，最高優先權，永遠覆蓋其他同名 Skill</small></div>
+    </div>
+    <div class="priority-card p2">
+      <div class="num">2</div>
+      <div class="text"><strong>Personal</strong><small>~/.claude/skills/</small></div>
+    </div>
+    <div class="priority-card p3">
+      <div class="num">3</div>
+      <div class="text"><strong>Project</strong><small>./.claude/skills/</small></div>
+    </div>
+    <div class="priority-card p4">
+      <div class="num">4</div>
+      <div class="text"><strong>Plugins</strong><small>最低優先權</small></div>
+    </div>
+  </div>
+  <p>若個人 Skill 與企業 Skill 同名 → <strong>企業版永遠優先</strong>。解法：把個人 Skill 改成更具體的名稱。</p>
+
+  <h3>問題 4：執行失敗（Runtime Failure）</h3>
+  <ul>
+    <li>外部套件需先安裝，並在 description 中說明</li>
+    <li>腳本需要執行權限：<code>chmod +x script.sh</code>（Windows 也用 <code>/</code> 路徑分隔符）</li>
+  </ul>
+
+  <h2>快速排查清單 Quick Checklist</h2>
+  <table>
+    <tr><th>症狀</th><th>解法</th></tr>
+    <tr><td>沒觸發</td><td>優化 description，加入 trigger phrases</td></tr>
+    <tr><td>沒載入</td><td>確認路徑結構、<code>skill.md</code> 檔名、YAML 語法</td></tr>
+    <tr><td>用到錯的 Skill</td><td>讓 descriptions 更明確，避免語義重疊</td></tr>
+    <tr><td>被覆蓋</td><td>確認 priority 規則，必要時改名</td></tr>
+    <tr><td>Plugin 不見</td><td>清 cache、重新安裝</td></tr>
+    <tr><td>執行失敗</td><td>確認相依套件、檔案執行權限</td></tr>
+  </table>
+
+  <div class="cta-box">
+    <div class="cta-header">實作練習 Try It Now</div>
+    <ol class="cta-steps">
+      <li>故意用「錯誤的」路徑放一個 <code>skill.md</code>，確認它不出現在清單中</li>
+      <li>修正路徑後重啟，確認 Skill 出現</li>
+      <li>修改 description 加入兩個你會說的 trigger phrases，測試它們是否都能觸發</li>
+      <li>用 <code>claude --debug</code> 啟動，觀察 Skill 載入的 log 訊息</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ 03 ═══ -->
+<section class="lesson" id="lesson03">
+  <span class="lesson-tag">Lesson 03</span>
+  <h1>Sharing Skills<br><small style="font-size:16px;font-weight:500;color:#666;">分享與部署 Skills</small></h1>
+  <div class="lesson-sub">本節概念：Repository Sharing · Plugins · Enterprise Deployment · Sub-agents</div>
+  <a href="https://www.youtube.com/watch?v=OCBi3eScNLk" target="_blank" class="video-link">
+    <img src="https://img.youtube.com/vi/OCBi3eScNLk/mqdefault.jpg" alt="Sharing Skills">
+    <div class="play-btn">
+      <div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      <span class="play-label">前往 YouTube 觀看影片</span>
+    </div>
+  </a>
+
+  <h2>本節重點 Key Takeaways</h2>
+  <ol>
+    <li>最簡單的分享方式：把 Skills 提交到 <strong>repo 的 <code>.claude/skills/</code></strong>，clone 就自動擁有。</li>
+    <li>Plugin 是跨 repository 分發 Skills 的方式，上架 Marketplace 後其他人可下載安裝。</li>
+    <li>企業管理員可透過 Managed Settings 組織級部署，優先權最高。</li>
+    <li><strong>Sub-agents 不自動繼承 Skills</strong>，必須在 agent.md 的 <code>skills</code> 欄位明確列出。</li>
+    <li>內建 agents（Explorer、Plan、Verify）<strong>完全無法存取</strong> Skills，只有自訂 sub-agent 可以。</li>
+  </ol>
+
+  <h2>三種分享方式 Sharing Methods</h2>
+
+  <h3>方式 1：提交到 Repository（最簡單）</h3>
+  <pre>.claude/
+└── skills/
+    └── your-skill/
+        └── skill.md</pre>
+  <ul>
+    <li>clone repo 自動擁有，push 更新後大家 pull 即可</li>
+    <li>適合：團隊 coding 規範、專案特定 workflow、需要 reference codebase 的 Skill</li>
+  </ul>
+
+  <h3>方式 2：透過 Plugin 分發</h3>
+  <pre>your-plugin/
+└── skills/
+    └── your-skill/
+        └── skill.md</pre>
+  <ul>
+    <li>在 plugin 專案建立 <code>skills/</code> 目錄，結構與 <code>.claude/skills/</code> 相同</li>
+    <li>上架 Marketplace 後其他使用者可下載安裝</li>
+    <li>適合：不限特定專案的通用 Skill、開源社群分享</li>
+  </ul>
+
+  <h3>方式 3：Enterprise 管理員部署</h3>
+  <ul>
+    <li>透過 Managed Settings 組織級部署</li>
+    <li><strong>Priority 最高</strong>，會覆蓋所有同名的 Personal / Project / Plugin Skill</li>
+    <li>適合：強制標準、合規需求（must 關鍵字）、安全流程</li>
+  </ul>
+
+  <h2>Sub-agents 與 Skills Sub-agents &amp; Skills</h2>
+
+  <div class="warn-box">
+    <div class="label">重要：Sub-agents 不自動繼承 Skills</div>
+    Sub-agent 啟動時是全新的乾淨 context。你的 Skills <strong>不會</strong>自動被 sub-agent 看到。
+  </div>
+
+  <table>
+    <tr><th>Agent 類型</th><th>能用 Skills 嗎？</th></tr>
+    <tr><td>內建 agents（Explorer、Plan、Verify）</td><td>❌ 完全無法存取</td></tr>
+    <tr><td>自訂 sub-agent</td><td>✅ 可以，但要明確列出</td></tr>
+  </table>
+
+  <h3>作法：在 agent.md 加入 skills 欄位</h3>
+  <pre>.claude/agents/frontend-reviewer.md：
+
+---
+name: frontend-reviewer
+description: Reviews frontend PRs for style and accessibility
+skills:
+  - pr-review
+  - brand-guidelines
+---
+
+（以下是 agent 的指令）</pre>
+
+  <div class="note-box">
+    <strong>注意：</strong>Sub-agent 的 Skills 是<strong>啟動時一次全部載入</strong>，不是按需載入。只列永遠相關的 Skills，避免浪費 context。
+  </div>
+
+  <div class="tip-box">
+    <div class="label">使用情境</div>
+    「不同 sub-agent 需要不同的 Skills」—— 例如 frontend-reviewer 用 UI 規範，backend-reviewer 用 API 規範。
+  </div>
+
+  <div class="cta-box">
+    <div class="cta-header">實作練習 Try It Now</div>
+    <ol class="cta-steps">
+      <li>把你的個人 Skill 複製一份到目前專案的 <code>.claude/skills/</code>，確認它能在專案中使用</li>
+      <li>建立一個 <code>.claude/agents/</code> 目錄，嘗試寫一個自訂 sub-agent 並指定一個 Skill</li>
+      <li>思考：你的團隊裡有哪些「每個人都要遵守」的規範適合做成 Skill 提交到 repo？</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ 04 ═══ -->
+<section class="lesson" id="lesson04">
+  <span class="lesson-tag">Lesson 04</span>
+  <h1>Skills vs Other Claude Code Features<br><small style="font-size:16px;font-weight:500;color:#666;">Skills 與其他功能的差異</small></h1>
+  <div class="lesson-sub">本節概念：CLAUDE.md · Sub-agents · Hooks · MCP Servers · Feature Selection</div>
+  <a href="https://www.youtube.com/watch?v=IgNN4v0BJdU" target="_blank" class="video-link">
+    <img src="https://img.youtube.com/vi/IgNN4v0BJdU/mqdefault.jpg" alt="How Skills Compare to Other Claude Code Features">
+    <div class="play-btn">
+      <div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      <span class="play-label">前往 YouTube 觀看影片</span>
+    </div>
+  </a>
+
+  <h2>本節重點 Key Takeaways</h2>
+  <ol>
+    <li>Claude Code 有五種客製化工具，各自解決不同問題，不能互相取代。</li>
+    <li><strong>Skills vs CLAUDE.md</strong>：CLAUDE.md 永遠載入，Skills 按需載入；詳細流程說明放 Skills 而非 CLAUDE.md。</li>
+    <li><strong>Skills vs Sub-agents</strong>：Skills 增強當前對話的知識；Sub-agents 在獨立 context 執行任務。</li>
+    <li><strong>Skills vs Hooks</strong>：Skills 是請求驅動（你說什麼）；Hooks 是事件驅動（Claude 做了什麼）。</li>
+    <li>大多數工作流會同時用多個工具，它們可以互補組合。</li>
+  </ol>
+
+  <h2>五種工具對比 Feature Comparison</h2>
+  <table>
+    <tr><th>工具</th><th>觸發時機</th><th>執行位置</th><th>適用情境</th></tr>
+    <tr><td><strong>CLAUDE.md</strong></td><td>每次對話都載入</td><td>主對話 context</td><td>永遠適用的規範、框架偏好、全域設定</td></tr>
+    <tr><td><strong>Skills</strong></td><td>請求語義匹配才載入</td><td>主對話 context</td><td>特定任務的專業知識、有時才需要的指令</td></tr>
+    <tr><td><strong>Sub-agents</strong></td><td>被委派時啟動</td><td>獨立 context</td><td>獨立任務委派、需要隔離的工作、不同工具存取</td></tr>
+    <tr><td><strong>Hooks</strong></td><td>事件觸發（存檔、工具呼叫）</td><td>系統層</td><td>每次存檔 lint、工具呼叫前驗證、自動化副作用</td></tr>
+    <tr><td><strong>MCP Servers</strong></td><td>工具呼叫時</td><td>外部服務</td><td>連接外部 API、資料庫、第三方工具</td></tr>
+  </table>
+
+  <h2>決策框架 Decision Framework</h2>
+
+  <div class="workflow">
+    <div class="wf-step"><span class="en">永遠需要？</span><span class="zh">→ CLAUDE.md</span></div>
+    <div class="wf-step"><span class="en">特定任務？</span><span class="zh">→ Skills</span></div>
+    <div class="wf-step"><span class="en">獨立委派？</span><span class="zh">→ Sub-agents</span></div>
+    <div class="wf-step"><span class="en">事件觸發？</span><span class="zh">→ Hooks</span></div>
+    <div class="wf-step"><span class="en">外部工具？</span><span class="zh">→ MCP</span></div>
+  </div>
+
+  <h3>用 CLAUDE.md 當：</h3>
+  <ul>
+    <li>規則永遠需要套用（「永遠不要修改 DB schema」）</li>
+    <li>框架偏好、程式碼風格、語言設定</li>
+  </ul>
+
+  <h3>用 Skills 當：</h3>
+  <ul>
+    <li>知識只在特定任務時需要</li>
+    <li>詳細流程說明（放進 CLAUDE.md 會讓每次對話都很肥）</li>
+  </ul>
+
+  <h3>用 Sub-agents 當：</h3>
+  <ul>
+    <li>想委派任務到獨立執行環境（不污染主 context）</li>
+    <li>需要與主對話不同的工具存取權</li>
+  </ul>
+
+  <h3>用 Hooks 當：</h3>
+  <ul>
+    <li>每次存檔都要跑的操作（自動 lint）</li>
+    <li>特定工具呼叫前的驗證（不是「Claude 決定」，而是「事件觸發」）</li>
+  </ul>
+
+  <h2>典型組合 Typical Setup</h2>
+  <pre>CLAUDE.md       → TypeScript strict mode、永遠不改 DB schema
+Skills          → PR review checklist、brand guidelines
+Hooks           → 存檔時自動跑 ESLint
+Sub-agents      → 委派給 frontend-reviewer / backend-reviewer</pre>
+
+  <div class="tip-box">
+    <div class="label">原則</div>
+    不要把所有東西都塞進 Skills。正確工具用在正確地方，是客製化 Claude Code 最重要的判斷力。
+  </div>
+
+  <div class="cta-box">
+    <div class="cta-header">實作練習 Try It Now</div>
+    <ol class="cta-steps">
+      <li>列出你目前在 CLAUDE.md 裡的規則，哪些是「特定任務才需要的」？把它們移到 Skills</li>
+      <li>想一個你希望「每次存檔自動執行」的操作 → 那是 Hook，不是 Skill</li>
+      <li>規劃你的 Claude Code 客製化架構：CLAUDE.md 放什麼、Skills 放什麼、Hooks 放什麼</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ 05 ═══ -->
+<section class="lesson" id="lesson05">
+  <span class="lesson-tag">Lesson 05</span>
+  <h1>Configuration &amp; Multi-file Skills<br><small style="font-size:16px;font-weight:500;color:#666;">進階設定與多檔案架構</small></h1>
+  <div class="lesson-sub">本節概念：Metadata Fields · allowed_tools · Progressive Disclosure · Scripts</div>
+  <a href="https://www.youtube.com/watch?v=98KaK_rn5rQ" target="_blank" class="video-link">
+    <img src="https://img.youtube.com/vi/98KaK_rn5rQ/mqdefault.jpg" alt="Configuration and Multi-file Skills">
+    <div class="play-btn">
+      <div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      <span class="play-label">前往 YouTube 觀看影片</span>
+    </div>
+  </a>
+
+  <h2>本節重點 Key Takeaways</h2>
+  <ol>
+    <li><code>skill.md</code> frontmatter 除了 name 和 description，還有 <code>allowed_tools</code>（限制工具）和 <code>model</code>（指定模型）。</li>
+    <li><strong>Progressive Disclosure</strong>：主指令放 <code>skill.md</code>（500 行以內），詳細參考資料放外部檔案，按需讀取。</li>
+    <li>Scripts 可以<strong>執行</strong>而不讀入 context，只消耗 output 的 tokens。</li>
+    <li>Description 要回答兩個問題：這個 Skill 做什麼？何時應該用它？</li>
+    <li>超過 500 行就考慮拆分，或把部分內容移到 <code>references/</code>。</li>
+  </ol>
+
+  <h2>skill.md Metadata 欄位 Metadata Fields</h2>
+  <pre>---
+name: pr-review           # 必填：小寫+連字號，max 64 字，須與目錄名稱一致
+description: |            # 必填：Claude 用來決定何時啟動，max 1024 字
+  Writes structured PR descriptions following our template.
+  Use when: "write a PR description", "review my changes",
+  "help me document this", "write PR notes".
+allowed_tools:            # 選填：限制此 Skill 可用的工具
+  - Read
+  - Bash
+model: claude-sonnet-4-6  # 選填：指定使用哪個 Claude 模型
+---</pre>
+
+  <h2>寫好 Description 的關鍵 Writing Effective Descriptions</h2>
+  <p>Description 是 Claude 決定是否觸發的唯一依據。一個好的 description 要回答：</p>
+  <ol>
+    <li><strong>這個 Skill 做什麼？</strong>（What it does）</li>
+    <li><strong>何時應該用它？</strong>（When to use it — trigger phrases）</li>
+  </ol>
+  <div class="example-box">
+    <div class="label">❌ 太模糊</div>
+    <code>Helps with dogs.</code>
+  </div>
+  <div class="example-box">
+    <div class="label">✅ 清楚明確</div>
+    <code>Helps with dog breed identification and care recommendations. Use when asked to "identify this breed", "what breed is this?", "tell me about dog breeds", or any dog-related questions.</code>
+  </div>
+
+  <h2>allowed_tools：限制工具存取</h2>
+  <ul>
+    <li>列出的工具 = Skill 啟動時 Claude 只能用這些工具（無需詢問權限）</li>
+    <li>省略 <code>allowed_tools</code> → 不限制，沿用一般權限模型</li>
+    <li>常用情境：只讀分析型 Skill → 只列 <code>Read</code>，避免意外修改</li>
+  </ul>
+
+  <h2>多檔案架構 Multi-file Structure</h2>
+  <p>當 Skill 越來越複雜，Progressive Disclosure 讓你把「全部塞進一個大檔案」變成「按需讀取」：</p>
+
+  <pre>pr-review/
+├── skill.md              ← 核心指令，保持 &lt; 500 行
+├── references/
+│   └── architecture.md   ← 只有被問到系統設計時才讀
+├── scripts/
+│   └── validate.sh       ← 執行腳本（不讀入 context，直接跑）
+└── assets/
+    └── template.json     ← 模板資料、範例等</pre>
+
+  <p>在 <code>skill.md</code> 裡這樣引用：</p>
+  <pre>如果被問到系統架構相關問題，讀 references/architecture.md。
+如需驗證環境，執行 scripts/validate.sh（不要讀取它的內容）。</pre>
+
+  <div class="key-rule">
+    讓 Claude 讀外部檔案 vs. 執行腳本的差異：<br>
+    • 讀取 → 內容進入 context window，消耗 tokens<br>
+    • 執行 → 只有 output 進入 context，腳本內容不佔空間
+  </div>
+
+  <h2>Scripts 的使用時機 When to Use Scripts</h2>
+  <ul>
+    <li>環境驗證（確認套件是否安裝）</li>
+    <li>需要一致性的資料轉換</li>
+    <li>比 LLM 生成的程式碼更可靠的操作</li>
+  </ul>
+  <p><strong>告訴 Claude 「執行」這個 script，而不是「讀取」它。</strong></p>
+
+  <div class="cta-box">
+    <div class="cta-header">實作練習 Try It Now</div>
+    <ol class="cta-steps">
+      <li>為你現有的 Skill 加入 <code>allowed_tools</code>，限制它只能用 <code>Read</code>，測試是否生效</li>
+      <li>建立一個 <code>references/</code> 子目錄，把過長的參考資料移進去，在 skill.md 中用條件式引用</li>
+      <li>寫一個簡單的 validation script，讓 Skill 執行它來確認環境是否就緒</li>
+      <li>確認你的 skill.md 是否超過 500 行，如果是，規劃如何拆分</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ 06 ═══ -->
+<section class="lesson" id="lesson06">
+  <span class="lesson-tag">Lesson 06</span>
+  <h1>Creating Your First Skill<br><small style="font-size:16px;font-weight:500;color:#666;">建立你的第一個 Skill</small></h1>
+  <div class="lesson-sub">本節概念：Skill Creation · Loading Flow · Priority Rules · Update &amp; Delete</div>
+  <a href="https://www.youtube.com/watch?v=Wx6_vjFFyHM" target="_blank" class="video-link">
+    <img src="https://img.youtube.com/vi/Wx6_vjFFyHM/mqdefault.jpg" alt="Creating Your First Skill">
+    <div class="play-btn">
+      <div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      <span class="play-label">前往 YouTube 觀看影片</span>
+    </div>
+  </a>
+
+  <h2>本節重點 Key Takeaways</h2>
+  <ol>
+    <li>建立 Skill = 在 skills 目錄下建立一個以 skill 名稱命名的目錄 + 一個 <code>skill.md</code> 檔案。</li>
+    <li>Claude Code 啟動時只載入 name + description，<strong>不載入全文</strong>，直到被觸發才讀完整內容。</li>
+    <li>觸發時 Claude 會先<strong>詢問確認</strong>是否載入，讓你知道它在用哪個 Skill。</li>
+    <li>Priority：Enterprise > Personal > Project > Plugin。</li>
+    <li>更新 Skill → 直接編輯 <code>skill.md</code>，重啟 Claude Code；刪除 → 刪整個目錄，重啟。</li>
+  </ol>
+
+  <h2>建立流程 Step-by-Step</h2>
+
+  <pre># 1. 建立目錄（個人 Skill 範例）
+mkdir -p ~/.claude/skills/explain-code
+
+# 2. 建立 skill.md
+# （寫好 frontmatter + 指令）
+
+# 3. 重啟 Claude Code
+# （Skill 在啟動時載入，修改後需重啟）
+
+# 4. 驗證 Skill 已載入
+# 在對話中輸入：/list-skills 或直接問 "what skills are available"</pre>
+
+  <h3>skill.md 範例</h3>
+  <pre>---
+name: explain-code
+description: |
+  Explains code using visual diagrams and analogies.
+  Use when asked to "explain this function", "help me understand this code",
+  "what does this do", "walk me through this", "break this down for me".
+---
+
+當解釋程式碼時，請依以下步驟：
+1. 先用一個日常生活的比喻說明核心概念
+2. 用流程圖（ASCII 圖或文字描述）展示資料流
+3. 逐步說明每個關鍵步驟
+4. 最後給一個完整的使用範例</pre>
+
+  <h2>Claude Code 如何載入 Skill How Skills Load</h2>
+
+  <div class="workflow">
+    <div class="wf-step"><span class="en">啟動</span><span class="zh">掃描 4 個位置</span></div>
+    <div class="wf-step"><span class="en">載入</span><span class="zh">name + description only</span></div>
+    <div class="wf-step"><span class="en">收到請求</span><span class="zh">語義匹配 descriptions</span></div>
+    <div class="wf-step"><span class="en">詢問確認</span><span class="zh">載入完整 skill.md</span></div>
+    <div class="wf-step"><span class="en">執行</span><span class="zh">依指令處理請求</span></div>
+  </div>
+
+  <div class="note-box">
+    <strong>為什麼要確認步驟？</strong> 讓你清楚知道 Claude 正在用哪個 Skill，保持透明度。
+  </div>
+
+  <h2>Priority 規則 Priority Rules</h2>
+  <div class="priority-cards">
+    <div class="priority-card p1">
+      <div class="num">1</div>
+      <div class="text"><strong>Enterprise（最高）</strong><small>管理設定，無法被個人/專案 Skill 覆蓋</small></div>
+    </div>
+    <div class="priority-card p2">
+      <div class="num">2</div>
+      <div class="text"><strong>Personal</strong><small>~/.claude/skills/</small></div>
+    </div>
+    <div class="priority-card p3">
+      <div class="num">3</div>
+      <div class="text"><strong>Project</strong><small>./.claude/skills/</small></div>
+    </div>
+    <div class="priority-card p4">
+      <div class="num">4</div>
+      <div class="text"><strong>Plugins（最低）</strong><small>Marketplace 安裝的 Skills</small></div>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <div class="label">命名建議</div>
+    避免泛用名稱：<code>review</code> → 容易衝突<br>
+    用描述性名稱：<code>frontend-pr-review</code>、<code>security-audit</code> → 明確、不易衝突
+  </div>
+
+  <h2>更新與刪除 Update &amp; Delete</h2>
+  <table>
+    <tr><th>操作</th><th>作法</th></tr>
+    <tr><td>更新 Skill</td><td>直接編輯 <code>skill.md</code> → 重啟 Claude Code</td></tr>
+    <tr><td>刪除 Skill</td><td>刪除整個 skill 目錄 → 重啟 Claude Code</td></tr>
+  </table>
+
+  <div class="cta-box">
+    <div class="cta-header">最終挑戰 Final Challenge</div>
+    <ol class="cta-steps">
+      <li>建立一個解決你實際痛點的 Skill（從你最常重複說的事情出發）</li>
+      <li>寫好 description，包含至少 3 個 trigger phrases</li>
+      <li>重啟後測試，確認觸發成功</li>
+      <li>把它提交到你的 repo，讓團隊成員也能使用</li>
+      <li>思考：這個 Skill 未來需要哪些 references 或 scripts？先規劃好目錄結構</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ══ RESOURCES ══ -->
+<section class="lesson" id="resources" style="border-bottom:none;">
+  <span class="lesson-tag" style="background:#e0f2fe;color:#0369a1;">延伸學習</span>
+  <h1 style="border-color:#0369a1;">Learning Resources<br><small style="font-size:16px;font-weight:500;color:#666;">課程結束後繼續深化的路徑</small></h1>
+
+  <h2>原始課程影片 Source Videos</h2>
+  <div class="resource-list" style="margin-bottom:0;">
+    <li style="padding:9px 0;border-bottom:1px solid #e5e7eb;list-style:none;">
+      <a href="https://youtube.com/playlist?list=PLmWCw1CzcFim_hkruZSlABOUOAAQ5JMyo&si=fGO447oWArr1Txw9" target="_blank">Claude Youtube 官方頻道課程 Claude Code Skills</a>
+      <div class="resource-desc">本份筆記的資料來源，播放清單共 6 支影片</div>
+    </li>
+  </div>
+
+  <h2 style="margin-top:20px;">官方認證課程 Certification Course</h2>
+  <div class="resource-list" style="margin-bottom:0;">
+    <li style="padding:9px 0;border-bottom:1px solid #e5e7eb;list-style:none;">
+      <a href="https://anthropic.skilljar.com/introduction-to-agent-skills" target="_blank">Introduction to Agent Skills — Anthropic Skilljar</a>
+      <div class="resource-desc">Anthropic 官方認證課程，完成後可取得 Skills 相關證照</div>
+    </li>
+  </div>
+
+  <h2 style="margin-top:20px;">官方文件 Official Docs</h2>
+  <div class="resource-list" style="margin-bottom:0;">
+    <li style="padding:9px 0;border-bottom:1px solid #e5e7eb;list-style:none;">
+      <a href="https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf" target="_blank">The Complete Guide to Building Skills for Claude（PDF）</a>
+      <div class="resource-desc">Anthropic 官方發布的 Skills 建立指南（PDF），說明 skill.md 欄位規格與多檔案技能架構</div>
+    </li>
+    <li style="padding:9px 0;list-style:none;">
+      <a href="https://platform.claude.com/cookbook/skills-notebooks-01-skills-introduction" target="_blank">Claude Cookbook — Skills Introduction Notebook</a>
+      <div class="resource-desc">⚠️ 此連結為 Anthropic API Skills（透過 API 生成 Excel / PowerPoint / PDF 的功能），與本課程的 Claude Code Skills（skill.md 檔案）是不同的功能，名稱相同但機制不同</div>
+    </li>
+  </div>
+</section>
+
+<!-- ══ SOURCE FOOTER ══ -->
+<div class="source-footer">
+  整理自 <a href="https://youtube.com/playlist?list=PLmWCw1CzcFim_hkruZSlABOUOAAQ5JMyo&si=fGO447oWArr1Txw9" target="_blank">Claude Youtube 官方頻道課程 Claude Code Skills</a> · 2026-05-21
+</div>
+
+</main>
+</div><!-- end .layout -->
+
+<script>
+// ── Active nav on scroll ──
+const lessons = document.querySelectorAll('.lesson');
+const navLinks = document.querySelectorAll('.nav-item a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.nav-item a[href="#${entry.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+lessons.forEach(l => observer.observe(l));
+
+// ── Mobile sidebar ──
+const hamburger = document.querySelector('.hamburger');
+const sidebar = document.querySelector('.sidebar');
+const overlay = document.querySelector('.sidebar-overlay');
+hamburger.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('visible');
+});
+overlay.addEventListener('click', () => {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('visible');
+});
+navLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('visible');
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+_pdf_src.html
+__pycache__/
+*.pyc
+.DS_Store
